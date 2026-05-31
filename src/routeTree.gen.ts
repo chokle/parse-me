@@ -9,8 +9,50 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ReviewInboxRouteImport } from './routes/review-inbox'
+import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as IntegrationsRouteImport } from './routes/integrations'
+import { Route as ExportsAndIntegrationsRouteImport } from './routes/exports-and-integrations'
+import { Route as DocumentParsingRouteImport } from './routes/document-parsing'
+import { Route as DocumentIntakeRouteImport } from './routes/document-intake'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as IndexRouteImport } from './routes/index'
 
+const ReviewInboxRoute = ReviewInboxRouteImport.update({
+  id: '/review-inbox',
+  path: '/review-inbox',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IntegrationsRoute = IntegrationsRouteImport.update({
+  id: '/integrations',
+  path: '/integrations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExportsAndIntegrationsRoute = ExportsAndIntegrationsRouteImport.update({
+  id: '/exports-and-integrations',
+  path: '/exports-and-integrations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocumentParsingRoute = DocumentParsingRouteImport.update({
+  id: '/document-parsing',
+  path: '/document-parsing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocumentIntakeRoute = DocumentIntakeRouteImport.update({
+  id: '/document-intake',
+  path: '/document-intake',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +61,130 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/contact': typeof ContactRoute
+  '/document-intake': typeof DocumentIntakeRoute
+  '/document-parsing': typeof DocumentParsingRoute
+  '/exports-and-integrations': typeof ExportsAndIntegrationsRoute
+  '/integrations': typeof IntegrationsRoute
+  '/pricing': typeof PricingRoute
+  '/review-inbox': typeof ReviewInboxRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/contact': typeof ContactRoute
+  '/document-intake': typeof DocumentIntakeRoute
+  '/document-parsing': typeof DocumentParsingRoute
+  '/exports-and-integrations': typeof ExportsAndIntegrationsRoute
+  '/integrations': typeof IntegrationsRoute
+  '/pricing': typeof PricingRoute
+  '/review-inbox': typeof ReviewInboxRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/contact': typeof ContactRoute
+  '/document-intake': typeof DocumentIntakeRoute
+  '/document-parsing': typeof DocumentParsingRoute
+  '/exports-and-integrations': typeof ExportsAndIntegrationsRoute
+  '/integrations': typeof IntegrationsRoute
+  '/pricing': typeof PricingRoute
+  '/review-inbox': typeof ReviewInboxRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/contact'
+    | '/document-intake'
+    | '/document-parsing'
+    | '/exports-and-integrations'
+    | '/integrations'
+    | '/pricing'
+    | '/review-inbox'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/contact'
+    | '/document-intake'
+    | '/document-parsing'
+    | '/exports-and-integrations'
+    | '/integrations'
+    | '/pricing'
+    | '/review-inbox'
+  id:
+    | '__root__'
+    | '/'
+    | '/contact'
+    | '/document-intake'
+    | '/document-parsing'
+    | '/exports-and-integrations'
+    | '/integrations'
+    | '/pricing'
+    | '/review-inbox'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ContactRoute: typeof ContactRoute
+  DocumentIntakeRoute: typeof DocumentIntakeRoute
+  DocumentParsingRoute: typeof DocumentParsingRoute
+  ExportsAndIntegrationsRoute: typeof ExportsAndIntegrationsRoute
+  IntegrationsRoute: typeof IntegrationsRoute
+  PricingRoute: typeof PricingRoute
+  ReviewInboxRoute: typeof ReviewInboxRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/review-inbox': {
+      id: '/review-inbox'
+      path: '/review-inbox'
+      fullPath: '/review-inbox'
+      preLoaderRoute: typeof ReviewInboxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/integrations': {
+      id: '/integrations'
+      path: '/integrations'
+      fullPath: '/integrations'
+      preLoaderRoute: typeof IntegrationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/exports-and-integrations': {
+      id: '/exports-and-integrations'
+      path: '/exports-and-integrations'
+      fullPath: '/exports-and-integrations'
+      preLoaderRoute: typeof ExportsAndIntegrationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/document-parsing': {
+      id: '/document-parsing'
+      path: '/document-parsing'
+      fullPath: '/document-parsing'
+      preLoaderRoute: typeof DocumentParsingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/document-intake': {
+      id: '/document-intake'
+      path: '/document-intake'
+      fullPath: '/document-intake'
+      preLoaderRoute: typeof DocumentIntakeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,7 +197,24 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ContactRoute: ContactRoute,
+  DocumentIntakeRoute: DocumentIntakeRoute,
+  DocumentParsingRoute: DocumentParsingRoute,
+  ExportsAndIntegrationsRoute: ExportsAndIntegrationsRoute,
+  IntegrationsRoute: IntegrationsRoute,
+  PricingRoute: PricingRoute,
+  ReviewInboxRoute: ReviewInboxRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
