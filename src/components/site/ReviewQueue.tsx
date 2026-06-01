@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
-import { useIntakeDocs, setDocStatus, updateDocField, clearAll, type IntakeDoc } from "@/lib/intake-store";
+import {
+  useIntakeDocs,
+  setDocStatus,
+  setDocsStatus,
+  updateDocField,
+  clearAll,
+  type IntakeDoc,
+} from "@/lib/intake-store";
+import { Checkbox } from "@/components/ui/checkbox";
 
 function confColor(c: number) {
   if (c >= 90) return "text-primary";
@@ -10,6 +18,7 @@ function confColor(c: number) {
 export function ReviewQueue() {
   const docs = useIntakeDocs();
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [note, setNote] = useState("");
 
   useEffect(() => {
@@ -19,12 +28,69 @@ export function ReviewQueue() {
     }
   }, [docs, selectedId]);
 
+  // Clean selection when docs change (e.g. status updated)
+  useEffect(() => {
+    setSelectedIds((prev) => {
+      const remaining = new Set<string>();
+      for (const id of prev) {
+        if (docs.find((d) => d.id === id)) remaining.add(id);
+      }
+      return remaining;
+    });
+  }, [docs]);
+
   const selected = docs.find((d) => d.id === selectedId) ?? null;
 
   const counts = {
     in_review: docs.filter((d) => d.status === "in_review").length,
     approved: docs.filter((d) => d.status === "approved").length,
     changes: docs.filter((d) => d.status === "changes_requested").length,
+  };
+
+  const inReviewIds = docs
+    .filter((d) => d.status === "in_review")
+    .map((d) => d.id);
+
+  const allInReviewSelected =
+    inReviewIds.length > 0 && inReviewIds.every((id) => selectedIds.has(id));
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (allInReviewSelected) {
+      setSelectedIds((prev) => {
+        const next = new Set(prev);
+        for (const id of inReviewIds) next.delete(id);
+        return next;
+      });
+    } else {
+      setSelectedIds((prev) => {
+        const next = new Set(prev);
+        for (const id of inReviewIds) next.add(id);
+        return next;
+      });
+    }
+  };
+
+  const handleBulkApprove = () => {
+    if (selectedIds.size === 0) return;
+    setDocsStatus(Array.from(selectedIds), "approved", note || undefined);
+    setSelectedIds(new Set());
+    setNote("");
+  };
+
+  const handleBulkRequest = () => {
+    if (selectedIds.size === 0) return;
+    setDocsStatus(Array.from(selectedIds), "changes_requested", note || undefined);
+    setSelectedIds(new Set());
+    setNote("");
   };
 
   return (
@@ -39,11 +105,26 @@ export function ReviewQueue() {
             </div>
           </div>
           <button
-            onClick={() => { clearAll(); setSelectedId(null); }}
+            onClick={() => { clearAll(); setSelectedId(null); setSelectedIds(new Set()); }}
             className="text-[10px] font-mono text-muted-foreground hover:text-foreground"
           >
             Reset
           </button>
+        </div>
+        <div className="p-2 border-b border-border flex items-center gap-2">
+          <Checkbox
+            id="select-all"
+            checked={allInReviewSelected}
+            onCheckedChange={toggleSelectAll}
+          />
+          <label htmlFor="select-all" className="text-[11px] text-muted-foreground cursor-pointer select-none">
+            Select all in review
+          </label>
+          {selectedIds.size > 0 && (
+            <span className="ml-auto text-[10px] font-mono text-foreground">
+              {selectedIds.size} selected
+            </span>
+          )}
         </div>
         <div className="flex-1 overflow-y-auto max-h-[480px]">
           {docs.length === 0 && (
@@ -52,24 +133,32 @@ export function ReviewQueue() {
             </p>
           )}
           {docs.map((d) => (
-            <button
+            <div
               key={d.id}
               onClick={() => setSelectedId(d.id)}
-              className={`w-full text-left p-4 border-b border-border transition ${
+              className={`w-full text-left p-4 border-b border-border transition cursor-pointer flex items-start gap-3 ${
                 d.id === selectedId ? "bg-surface" : "hover:bg-surface/60"
               }`}
             >
-              <div className="flex justify-between items-start gap-2">
-                <div className="min-w-0">
-                  <div className="text-sm font-medium truncate">{d.name}</div>
-                  <div className="text-[10px] font-mono text-muted-foreground truncate">{d.source}</div>
+              <div className="pt-0.5" onClick={(e) => e.stopPropagation()}>
+                <Checkbox
+                  checked={selectedIds.has(d.id)}
+                  onCheckedChange={() => toggleSelect(d.id)}
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex justify-between items-start gap-2">
+                  <div className="min-w-0">
+                    <div className="text-sm font-medium truncate">{d.name}</div>
+                    <div className="text-[10px] font-mono text-muted-foreground truncate">{d.source}</div>
+                  </div>
+                  <StatusDot status={d.status} />
                 </div>
-                <StatusDot status={d.status} />
+                <div className="text-[10px] font-mono text-muted-foreground mt-2">
+                  {timeAgo(d.submittedAt)}
+                </div>
               </div>
-              <div className="text-[10px] font-mono text-muted-foreground mt-2">
-                {timeAgo(d.submittedAt)}
-              </div>
-            </button>
+            </div>
           ))}
         </div>
       </aside>
@@ -89,6 +178,9 @@ export function ReviewQueue() {
             onApprove={() => { setDocStatus(selected.id, "approved", note || undefined); setNote(""); }}
             onRequest={() => { setDocStatus(selected.id, "changes_requested", note || undefined); setNote(""); }}
             onEdit={(k, v) => updateDocField(selected.id, k, v)}
+            selectedCount={selectedIds.size}
+            onBulkApprove={handleBulkApprove}
+            onBulkRequest={handleBulkRequest}
           />
         )}
       </div>
@@ -97,7 +189,15 @@ export function ReviewQueue() {
 }
 
 function Detail({
-  doc, note, setNote, onApprove, onRequest, onEdit,
+  doc,
+  note,
+  setNote,
+  onApprove,
+  onRequest,
+  onEdit,
+  selectedCount,
+  onBulkApprove,
+  onBulkRequest,
 }: {
   doc: IntakeDoc;
   note: string;
@@ -105,8 +205,13 @@ function Detail({
   onApprove: () => void;
   onRequest: () => void;
   onEdit: (key: string, value: string) => void;
+  selectedCount: number;
+  onBulkApprove: () => void;
+  onBulkRequest: () => void;
 }) {
   const locked = doc.status !== "in_review";
+  const showBulk = selectedCount > 1;
+
   return (
     <>
       <div className="p-6 border-b border-border flex justify-between items-start gap-4">
@@ -149,7 +254,34 @@ function Detail({
         )}
       </div>
 
-      {!locked ? (
+      {showBulk ? (
+        <div className="p-6 border-t border-border space-y-3">
+          <div className="text-[11px] font-mono text-muted-foreground">
+            {selectedCount} documents selected
+          </div>
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="Optional note applied to all selected…"
+            rows={2}
+            className="w-full p-3 rounded-sm text-sm border border-border bg-surface focus:outline-none focus:border-foreground/40 resize-none"
+          />
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={onBulkRequest}
+              className="py-3 border border-border font-medium text-sm rounded-sm hover:bg-muted transition"
+            >
+              Request changes ({selectedCount})
+            </button>
+            <button
+              onClick={onBulkApprove}
+              className="py-3 bg-primary text-primary-foreground font-medium text-sm rounded-sm hover:brightness-110 transition"
+            >
+              Approve & send ({selectedCount})
+            </button>
+          </div>
+        </div>
+      ) : !locked ? (
         <div className="p-6 border-t border-border space-y-3">
           <textarea
             value={note}
@@ -185,9 +317,11 @@ function Detail({
 
 function StatusDot({ status }: { status: IntakeDoc["status"] }) {
   const cls =
-    status === "approved" ? "bg-primary"
-    : status === "changes_requested" ? "bg-foreground"
-    : "bg-[var(--warning)]";
+    status === "approved"
+      ? "bg-primary"
+      : status === "changes_requested"
+        ? "bg-foreground"
+        : "bg-[var(--warning)]";
   return <span className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${cls}`} />;
 }
 
@@ -198,7 +332,11 @@ function StatusBadge({ status }: { status: IntakeDoc["status"] }) {
     changes_requested: { label: "Changes requested", cls: "bg-muted text-foreground" },
   } as const;
   const v = map[status];
-  return <span className={`text-[10px] font-mono px-2 py-1 rounded whitespace-nowrap ${v.cls}`}>{v.label}</span>;
+  return (
+    <span className={`text-[10px] font-mono px-2 py-1 rounded whitespace-nowrap ${v.cls}`}>
+      {v.label}
+    </span>
+  );
 }
 
 function timeAgo(t: number) {
