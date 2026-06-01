@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ReviewInboxDemo } from "@/components/site/ReviewInboxDemo";
+import { ReviewQueue } from "@/components/site/ReviewQueue";
 import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
 
