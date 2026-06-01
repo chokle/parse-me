@@ -96,6 +96,15 @@ export function setDocStatus(id: string, status: DocStatus, note?: string) {
   write(docs);
 }
 
+export function setDocsStatus(ids: string[], status: DocStatus, note?: string) {
+  const now = Date.now();
+  const docs = read().map((d) =>
+    ids.includes(d.id) ? { ...d, status, note, reviewedAt: now } : d,
+  );
+  write(docs);
+}
+
+
 export function updateDocField(id: string, key: string, value: string) {
   const docs = read().map((d) =>
     d.id === id
