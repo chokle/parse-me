@@ -174,14 +174,9 @@ function Detail({
           </div>
         </div>
       ) : (
-        <div className="p-6 border-t border-border">
-          <button
-            onClick={() => onEdit && (window.dispatchEvent(new Event("syntax-intake-updated")))}
-            className="text-[11px] font-mono text-muted-foreground"
-          >
-            {doc.status === "approved" ? "✓ Sent to downstream webhook" : "↩ Returned to submitter"}
-            {doc.reviewedAt && ` · ${timeAgo(doc.reviewedAt)}`}
-          </button>
+        <div className="p-6 border-t border-border text-[11px] font-mono text-muted-foreground">
+          {doc.status === "approved" ? "✓ Sent to downstream webhook" : "↩ Returned to submitter"}
+          {doc.reviewedAt && ` · ${timeAgo(doc.reviewedAt)}`}
         </div>
       )}
     </>
