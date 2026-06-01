@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
+import { IntakeForm } from "@/components/site/IntakeForm";
 
 export const Route = createFileRoute("/document-intake")({
   head: () => ({
