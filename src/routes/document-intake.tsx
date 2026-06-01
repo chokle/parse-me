@@ -43,6 +43,17 @@ function Page() {
         ))}
       </section>
 
+      <section className="px-6 pb-24 max-w-6xl mx-auto">
+        <div className="mb-6">
+          <span className="text-[10px] font-mono uppercase tracking-widest text-primary">Live demo</span>
+          <h2 className="text-2xl font-extrabold tracking-tight mt-2">Push a document into the pipeline</h2>
+          <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
+            Each submission lands in the <Link to="/review-inbox" className="underline">Review Inbox</Link>, where a human can approve or request changes.
+          </p>
+        </div>
+        <IntakeForm />
+      </section>
+
       <section className="px-6 py-16 text-center">
         <Link to="/contact" className="inline-block px-8 py-4 bg-primary text-primary-foreground font-semibold rounded-sm">
           See it on your documents
