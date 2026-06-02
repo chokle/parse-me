@@ -343,6 +343,63 @@ function StatusBadge({ status }: { status: IntakeDoc["status"] }) {
   );
 }
 
+const ACTION_LABEL: Record<AuditAction, string> = {
+  submitted: "Submitted",
+  field_edited: "Field edited",
+  approved: "Approved",
+  changes_requested: "Changes requested",
+  bulk_approved: "Approved (bulk)",
+  bulk_changes_requested: "Changes requested (bulk)",
+};
+
+function actionDot(a: AuditAction) {
+  if (a === "approved" || a === "bulk_approved") return "bg-primary";
+  if (a === "changes_requested" || a === "bulk_changes_requested") return "bg-foreground";
+  if (a === "field_edited") return "bg-[var(--warning)]";
+  return "bg-muted-foreground";
+}
+
+function AuditTimeline({ events }: { events: AuditEvent[] }) {
+  const sorted = [...events].sort((a, b) => b.at - a.at);
+  return (
+    <div className="pt-2">
+      <div className="flex items-center justify-between mb-3">
+        <div className="text-[10px] font-mono uppercase text-muted-foreground">Audit log</div>
+        <div className="text-[10px] font-mono text-muted-foreground">{sorted.length} event{sorted.length === 1 ? "" : "s"}</div>
+      </div>
+      {sorted.length === 0 ? (
+        <p className="text-xs text-muted-foreground">No activity yet.</p>
+      ) : (
+        <ol className="relative border-l border-border ml-1.5 space-y-4">
+          {sorted.map((e) => (
+            <li key={e.id} className="pl-4 relative">
+              <span className={`absolute -left-[5px] top-1.5 w-2 h-2 rounded-full ${actionDot(e.action)}`} />
+              <div className="flex items-baseline gap-2 flex-wrap">
+                <span className="text-xs font-medium">{ACTION_LABEL[e.action]}</span>
+                {e.bulk && (
+                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-muted text-muted-foreground uppercase">
+                    bulk
+                  </span>
+                )}
+                <span className="text-[10px] font-mono text-muted-foreground ml-auto">
+                  {timeAgo(e.at)}
+                </span>
+              </div>
+              <div className="text-[10px] font-mono text-muted-foreground mt-0.5">{e.actor}</div>
+              {e.detail && <p className="text-xs text-muted-foreground mt-1">{e.detail}</p>}
+              {e.note && (
+                <p className="text-xs mt-1 p-2 rounded-sm bg-surface border border-border">
+                  “{e.note}”
+                </p>
+              )}
+            </li>
+          ))}
+        </ol>
+      )}
+    </div>
+  );
+}
+
 function timeAgo(t: number) {
   const s = Math.floor((Date.now() - t) / 1000);
   if (s < 60) return `${s}s ago`;
