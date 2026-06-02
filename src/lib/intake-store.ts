@@ -10,6 +10,24 @@ export type ExtractedField = {
   confidence: number;
 };
 
+export type AuditAction =
+  | "submitted"
+  | "field_edited"
+  | "approved"
+  | "changes_requested"
+  | "bulk_approved"
+  | "bulk_changes_requested";
+
+export type AuditEvent = {
+  id: string;
+  at: number;
+  actor: string;
+  action: AuditAction;
+  detail?: string;
+  note?: string;
+  bulk?: boolean;
+};
+
 export type IntakeDoc = {
   id: string;
   name: string;
@@ -19,17 +37,36 @@ export type IntakeDoc = {
   fields: ExtractedField[];
   note?: string;
   reviewedAt?: number;
+  audit: AuditEvent[];
 };
 
-const KEY = "syntax.intake.docs.v1";
+const KEY = "syntax.intake.docs.v2";
 const EVENT = "syntax-intake-updated";
+const CURRENT_ACTOR = "you@syntax.ai";
+
+function uid(prefix = "evt") {
+  return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+}
+
+function mkEvent(input: Omit<AuditEvent, "id" | "at" | "actor"> & { actor?: string }): AuditEvent {
+  return {
+    id: uid(),
+    at: Date.now(),
+    actor: input.actor ?? CURRENT_ACTOR,
+    action: input.action,
+    detail: input.detail,
+    note: input.note,
+    bulk: input.bulk,
+  };
+}
 
 function read(): IntakeDoc[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = window.localStorage.getItem(KEY);
     if (!raw) return seed();
-    return JSON.parse(raw) as IntakeDoc[];
+    const docs = JSON.parse(raw) as IntakeDoc[];
+    return docs.map((d) => ({ ...d, audit: d.audit ?? [] }));
   } catch {
     return [];
   }
@@ -42,18 +79,28 @@ function write(docs: IntakeDoc[]) {
 }
 
 function seed(): IntakeDoc[] {
+  const now = Date.now();
   const docs: IntakeDoc[] = [
     {
       id: "doc_seed_1",
       name: "ACME Logistics — INV-2025-00482.pdf",
       source: "email · billing@",
-      submittedAt: Date.now() - 1000 * 60 * 12,
+      submittedAt: now - 1000 * 60 * 12,
       status: "in_review",
       fields: [
         { key: "vendor", label: "Vendor", value: "ACME Logistics Intl.", confidence: 99.8 },
         { key: "invoice", label: "Invoice #", value: "INV-2025-00482", confidence: 97.1 },
         { key: "tax", label: "Tax ID", value: "EU-982-1X (P?)", confidence: 64.2 },
         { key: "total", label: "Total", value: "$4,200.00", confidence: 98.1 },
+      ],
+      audit: [
+        {
+          id: uid(),
+          at: now - 1000 * 60 * 12,
+          actor: "intake@syntax.ai",
+          action: "submitted",
+          detail: "Received via email · billing@",
+        },
       ],
     },
   ];
@@ -83,6 +130,15 @@ export function submitDoc(input: { name: string; source: string }): IntakeDoc {
     submittedAt: Date.now(),
     status: "in_review",
     fields: fakeExtract(input.name),
+    audit: [
+      {
+        id: uid(),
+        at: Date.now(),
+        actor: "intake@syntax.ai",
+        action: "submitted",
+        detail: `Received via ${input.source}`,
+      },
+    ],
   };
   const docs = [doc, ...read()];
   write(docs);
@@ -90,27 +146,64 @@ export function submitDoc(input: { name: string; source: string }): IntakeDoc {
 }
 
 export function setDocStatus(id: string, status: DocStatus, note?: string) {
+  const action: AuditAction = status === "approved" ? "approved" : "changes_requested";
   const docs = read().map((d) =>
-    d.id === id ? { ...d, status, note, reviewedAt: Date.now() } : d,
+    d.id === id
+      ? {
+          ...d,
+          status,
+          note,
+          reviewedAt: Date.now(),
+          audit: [...d.audit, mkEvent({ action, note })],
+        }
+      : d,
   );
   write(docs);
 }
 
 export function setDocsStatus(ids: string[], status: DocStatus, note?: string) {
   const now = Date.now();
+  const action: AuditAction = status === "approved" ? "bulk_approved" : "bulk_changes_requested";
   const docs = read().map((d) =>
-    ids.includes(d.id) ? { ...d, status, note, reviewedAt: now } : d,
+    ids.includes(d.id)
+      ? {
+          ...d,
+          status,
+          note,
+          reviewedAt: now,
+          audit: [
+            ...d.audit,
+            mkEvent({
+              action,
+              note,
+              bulk: true,
+              detail: `Part of bulk action on ${ids.length} documents`,
+            }),
+          ],
+        }
+      : d,
   );
   write(docs);
 }
 
-
 export function updateDocField(id: string, key: string, value: string) {
-  const docs = read().map((d) =>
-    d.id === id
-      ? { ...d, fields: d.fields.map((f) => (f.key === key ? { ...f, value, confidence: 100 } : f)) }
-      : d,
-  );
+  const docs = read().map((d) => {
+    if (d.id !== id) return d;
+    const field = d.fields.find((f) => f.key === key);
+    const prev = field?.value ?? "";
+    if (prev === value) return d;
+    return {
+      ...d,
+      fields: d.fields.map((f) => (f.key === key ? { ...f, value, confidence: 100 } : f)),
+      audit: [
+        ...d.audit,
+        mkEvent({
+          action: "field_edited",
+          detail: `${field?.label ?? key}: "${prev}" → "${value}"`,
+        }),
+      ],
+    };
+  });
   write(docs);
 }
 
