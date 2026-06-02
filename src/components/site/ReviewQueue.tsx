@@ -6,6 +6,8 @@ import {
   updateDocField,
   clearAll,
   type IntakeDoc,
+  type AuditEvent,
+  type AuditAction,
 } from "@/lib/intake-store";
 import { Checkbox } from "@/components/ui/checkbox";
 
