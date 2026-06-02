@@ -254,6 +254,8 @@ function Detail({
             <p className="text-sm">{doc.note}</p>
           </div>
         )}
+
+        <AuditTimeline events={doc.audit} />
       </div>
 
       {showBulk ? (
