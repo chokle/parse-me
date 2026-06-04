@@ -14,7 +14,101 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      audit_events: {
+        Row: {
+          action: string
+          actor_email: string
+          actor_name: string
+          after_value: string | null
+          at: string
+          before_value: string | null
+          bulk: boolean
+          detail: string | null
+          doc_id: string
+          field_key: string | null
+          field_label: string | null
+          id: string
+          note: string | null
+        }
+        Insert: {
+          action: string
+          actor_email: string
+          actor_name: string
+          after_value?: string | null
+          at?: string
+          before_value?: string | null
+          bulk?: boolean
+          detail?: string | null
+          doc_id: string
+          field_key?: string | null
+          field_label?: string | null
+          id?: string
+          note?: string | null
+        }
+        Update: {
+          action?: string
+          actor_email?: string
+          actor_name?: string
+          after_value?: string | null
+          at?: string
+          before_value?: string | null
+          bulk?: boolean
+          detail?: string | null
+          doc_id?: string
+          field_key?: string | null
+          field_label?: string | null
+          id?: string
+          note?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_events_doc_id_fkey"
+            columns: ["doc_id"]
+            isOneToOne: false
+            referencedRelation: "intake_docs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      intake_docs: {
+        Row: {
+          fields: Json
+          id: string
+          name: string
+          note: string | null
+          reviewed_at: string | null
+          reviewer_email: string | null
+          reviewer_name: string | null
+          source: string
+          status: string
+          submitted_at: string
+        }
+        Insert: {
+          fields?: Json
+          id?: string
+          name: string
+          note?: string | null
+          reviewed_at?: string | null
+          reviewer_email?: string | null
+          reviewer_name?: string | null
+          source: string
+          status?: string
+          submitted_at?: string
+        }
+        Update: {
+          fields?: Json
+          id?: string
+          name?: string
+          note?: string | null
+          reviewed_at?: string | null
+          reviewer_email?: string | null
+          reviewer_name?: string | null
+          source?: string
+          status?: string
+          submitted_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
