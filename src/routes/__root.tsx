@@ -86,6 +86,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "author", content: "Syntax AI Systems" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:title", content: "Syntax.AI — Documents in. Validated data out." },
+      { name: "twitter:title", content: "Syntax.AI — Documents in. Validated data out." },
+      { name: "description", content: "Syntax.AI automates document intake and review, streamlining workflows with intelligent parsing and collaborative feedback." },
+      { property: "og:description", content: "Syntax.AI automates document intake and review, streamlining workflows with intelligent parsing and collaborative feedback." },
+      { name: "twitter:description", content: "Syntax.AI automates document intake and review, streamlining workflows with intelligent parsing and collaborative feedback." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4032bd5e-f181-43de-bf74-cf20341683e9/id-preview-20baca28--23e950a5-8684-4173-9422-c1f2008a8fc1.lovable.app-1780561267902.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4032bd5e-f181-43de-bf74-cf20341683e9/id-preview-20baca28--23e950a5-8684-4173-9422-c1f2008a8fc1.lovable.app-1780561267902.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
