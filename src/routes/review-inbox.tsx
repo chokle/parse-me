@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ReviewInboxDemo } from "@/components/site/ReviewInboxDemo";
 import { ReviewQueue } from "@/components/site/ReviewQueue";
+import { ReviewerIdentityPrompt } from "@/components/site/ReviewerIdentityPrompt";
 import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
 
@@ -60,7 +61,9 @@ function ReviewInbox() {
             + Submit a document
           </Link>
         </div>
-        <ReviewQueue />
+        <ReviewerIdentityPrompt>
+          <ReviewQueue />
+        </ReviewerIdentityPrompt>
       </section>
 
       <section className="px-6 py-20 bg-card border-y border-border">

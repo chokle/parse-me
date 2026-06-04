@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import {
   useIntakeDocs,
-  setDocStatus,
-  setDocsStatus,
-  updateDocField,
-  clearAll,
+  useIntakeMutations,
   type IntakeDoc,
   type AuditEvent,
   type AuditAction,
 } from "@/lib/intake-store";
+import { useReviewer } from "@/lib/reviewer-identity";
+import type { Reviewer } from "@/lib/reviewer-identity";
 import { Checkbox } from "@/components/ui/checkbox";
 
 function confColor(c: number) {
@@ -18,7 +17,9 @@ function confColor(c: number) {
 }
 
 export function ReviewQueue() {
+  const reviewer = useReviewer();
   const docs = useIntakeDocs();
+  const { setDocStatus, setDocsStatus, updateDocField, clearAll } = useIntakeMutations();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [note, setNote] = useState("");
@@ -30,13 +31,10 @@ export function ReviewQueue() {
     }
   }, [docs, selectedId]);
 
-  // Clean selection when docs change (e.g. status updated)
   useEffect(() => {
     setSelectedIds((prev) => {
       const remaining = new Set<string>();
-      for (const id of prev) {
-        if (docs.find((d) => d.id === id)) remaining.add(id);
-      }
+      for (const id of prev) if (docs.find((d) => d.id === id)) remaining.add(id);
       return remaining;
     });
   }, [docs]);
@@ -49,10 +47,7 @@ export function ReviewQueue() {
     changes: docs.filter((d) => d.status === "changes_requested").length,
   };
 
-  const inReviewIds = docs
-    .filter((d) => d.status === "in_review")
-    .map((d) => d.id);
-
+  const inReviewIds = docs.filter((d) => d.status === "in_review").map((d) => d.id);
   const allInReviewSelected =
     inReviewIds.length > 0 && inReviewIds.every((id) => selectedIds.has(id));
 
@@ -66,38 +61,39 @@ export function ReviewQueue() {
   };
 
   const toggleSelectAll = () => {
-    if (allInReviewSelected) {
-      setSelectedIds((prev) => {
-        const next = new Set(prev);
-        for (const id of inReviewIds) next.delete(id);
-        return next;
-      });
-    } else {
-      setSelectedIds((prev) => {
-        const next = new Set(prev);
-        for (const id of inReviewIds) next.add(id);
-        return next;
-      });
-    }
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (allInReviewSelected) for (const id of inReviewIds) next.delete(id);
+      else for (const id of inReviewIds) next.add(id);
+      return next;
+    });
+  };
+
+  const requireReviewer = (): Reviewer | null => {
+    if (!reviewer) return null;
+    return reviewer;
   };
 
   const handleBulkApprove = () => {
-    if (selectedIds.size === 0) return;
-    setDocsStatus(Array.from(selectedIds), "approved", note || undefined);
-    setSelectedIds(new Set());
-    setNote("");
+    const r = requireReviewer();
+    if (!r || selectedIds.size === 0) return;
+    setDocsStatus.mutate(
+      { ids: Array.from(selectedIds), status: "approved", note: note || undefined, reviewer: r },
+      { onSuccess: () => { setSelectedIds(new Set()); setNote(""); } },
+    );
   };
 
   const handleBulkRequest = () => {
-    if (selectedIds.size === 0) return;
-    setDocsStatus(Array.from(selectedIds), "changes_requested", note || undefined);
-    setSelectedIds(new Set());
-    setNote("");
+    const r = requireReviewer();
+    if (!r || selectedIds.size === 0) return;
+    setDocsStatus.mutate(
+      { ids: Array.from(selectedIds), status: "changes_requested", note: note || undefined, reviewer: r },
+      { onSuccess: () => { setSelectedIds(new Set()); setNote(""); } },
+    );
   };
 
   return (
     <div className="ring-1 ring-border rounded-xl overflow-hidden bg-card grid lg:grid-cols-[280px_1fr]">
-      {/* Queue list */}
       <aside className="border-b lg:border-b-0 lg:border-r border-border flex flex-col">
         <div className="p-4 border-b border-border flex justify-between items-center">
           <div>
@@ -107,18 +103,14 @@ export function ReviewQueue() {
             </div>
           </div>
           <button
-            onClick={() => { clearAll(); setSelectedId(null); setSelectedIds(new Set()); }}
+            onClick={() => { clearAll.mutate(); setSelectedId(null); setSelectedIds(new Set()); }}
             className="text-[10px] font-mono text-muted-foreground hover:text-foreground"
           >
             Reset
           </button>
         </div>
         <div className="p-2 border-b border-border flex items-center gap-2">
-          <Checkbox
-            id="select-all"
-            checked={allInReviewSelected}
-            onCheckedChange={toggleSelectAll}
-          />
+          <Checkbox id="select-all" checked={allInReviewSelected} onCheckedChange={toggleSelectAll} />
           <label htmlFor="select-all" className="text-[11px] text-muted-foreground cursor-pointer select-none">
             Select all in review
           </label>
@@ -143,10 +135,7 @@ export function ReviewQueue() {
               }`}
             >
               <div className="pt-0.5" onClick={(e) => e.stopPropagation()}>
-                <Checkbox
-                  checked={selectedIds.has(d.id)}
-                  onCheckedChange={() => toggleSelect(d.id)}
-                />
+                <Checkbox checked={selectedIds.has(d.id)} onCheckedChange={() => toggleSelect(d.id)} />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-start gap-2">
@@ -165,7 +154,6 @@ export function ReviewQueue() {
         </div>
       </aside>
 
-      {/* Detail */}
       <div className="flex flex-col min-h-[480px]">
         {!selected ? (
           <div className="flex-1 flex items-center justify-center text-sm text-muted-foreground p-8 text-center">
@@ -177,9 +165,25 @@ export function ReviewQueue() {
             doc={selected}
             note={note}
             setNote={setNote}
-            onApprove={() => { setDocStatus(selected.id, "approved", note || undefined); setNote(""); }}
-            onRequest={() => { setDocStatus(selected.id, "changes_requested", note || undefined); setNote(""); }}
-            onEdit={(k, v) => updateDocField(selected.id, k, v)}
+            reviewer={reviewer}
+            onApprove={() => {
+              if (!reviewer) return;
+              setDocStatus.mutate(
+                { id: selected.id, status: "approved", note: note || undefined, reviewer },
+                { onSuccess: () => setNote("") },
+              );
+            }}
+            onRequest={() => {
+              if (!reviewer) return;
+              setDocStatus.mutate(
+                { id: selected.id, status: "changes_requested", note: note || undefined, reviewer },
+                { onSuccess: () => setNote("") },
+              );
+            }}
+            onEdit={(k, v) => {
+              if (!reviewer) return;
+              updateDocField.mutate({ id: selected.id, key: k, value: v, reviewer });
+            }}
             selectedCount={selectedIds.size}
             onBulkApprove={handleBulkApprove}
             onBulkRequest={handleBulkRequest}
@@ -194,6 +198,7 @@ function Detail({
   doc,
   note,
   setNote,
+  reviewer,
   onApprove,
   onRequest,
   onEdit,
@@ -204,6 +209,7 @@ function Detail({
   doc: IntakeDoc;
   note: string;
   setNote: (s: string) => void;
+  reviewer: Reviewer | null;
   onApprove: () => void;
   onRequest: () => void;
   onEdit: (key: string, value: string) => void;
@@ -213,6 +219,13 @@ function Detail({
 }) {
   const locked = doc.status !== "in_review";
   const showBulk = selectedCount > 1;
+  // Local draft so we can debounce-commit on blur rather than per-keystroke
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
+
+  const commitEdit = (key: string, value: string) => {
+    const original = doc.fields.find((f) => f.key === key)?.value ?? "";
+    if (value !== original) onEdit(key, value);
+  };
 
   return (
     <>
@@ -227,6 +240,7 @@ function Detail({
       <div className="flex-1 overflow-y-auto p-6 space-y-5">
         {doc.fields.map((f) => {
           const isLow = f.confidence < 75;
+          const val = drafts[f.key] ?? f.value;
           return (
             <div key={f.key} className="space-y-2">
               <div className="flex justify-between items-end">
@@ -237,9 +251,10 @@ function Detail({
               </div>
               <input
                 type="text"
-                value={f.value}
+                value={val}
                 readOnly={locked}
-                onChange={(e) => onEdit(f.key, e.target.value)}
+                onChange={(e) => setDrafts((d) => ({ ...d, [f.key]: e.target.value }))}
+                onBlur={(e) => commitEdit(f.key, e.target.value)}
                 className={`w-full p-3 rounded-sm text-sm focus:outline-none transition border ${
                   isLow ? "border-[var(--warning)]/50 bg-[var(--warning)]/10" : "border-border bg-surface"
                 }`}
@@ -250,7 +265,9 @@ function Detail({
 
         {doc.note && (
           <div className="p-3 rounded-sm border border-border bg-surface">
-            <div className="text-[10px] font-mono uppercase text-muted-foreground mb-1">Reviewer note</div>
+            <div className="text-[10px] font-mono uppercase text-muted-foreground mb-1">
+              Reviewer note {doc.reviewerName && `· ${doc.reviewerName}`}
+            </div>
             <p className="text-sm">{doc.note}</p>
           </div>
         )}
@@ -261,7 +278,7 @@ function Detail({
       {showBulk ? (
         <div className="p-6 border-t border-border space-y-3">
           <div className="text-[11px] font-mono text-muted-foreground">
-            {selectedCount} documents selected
+            {selectedCount} documents selected · acting as {reviewer?.name ?? "—"}
           </div>
           <textarea
             value={note}
@@ -312,6 +329,7 @@ function Detail({
       ) : (
         <div className="p-6 border-t border-border text-[11px] font-mono text-muted-foreground">
           {doc.status === "approved" ? "✓ Sent to downstream webhook" : "↩ Returned to submitter"}
+          {doc.reviewerName && ` · by ${doc.reviewerName}`}
           {doc.reviewedAt && ` · ${timeAgo(doc.reviewedAt)}`}
         </div>
       )}
@@ -365,7 +383,9 @@ function AuditTimeline({ events }: { events: AuditEvent[] }) {
     <div className="pt-2">
       <div className="flex items-center justify-between mb-3">
         <div className="text-[10px] font-mono uppercase text-muted-foreground">Audit log</div>
-        <div className="text-[10px] font-mono text-muted-foreground">{sorted.length} event{sorted.length === 1 ? "" : "s"}</div>
+        <div className="text-[10px] font-mono text-muted-foreground">
+          {sorted.length} event{sorted.length === 1 ? "" : "s"}
+        </div>
       </div>
       {sorted.length === 0 ? (
         <p className="text-xs text-muted-foreground">No activity yet.</p>
@@ -385,11 +405,35 @@ function AuditTimeline({ events }: { events: AuditEvent[] }) {
                   {timeAgo(e.at)}
                 </span>
               </div>
-              <div className="text-[10px] font-mono text-muted-foreground mt-0.5">{e.actor}</div>
-              {e.detail && <p className="text-xs text-muted-foreground mt-1">{e.detail}</p>}
+              <div className="text-[10px] font-mono text-muted-foreground mt-0.5">
+                {e.actor_name} · {e.actor_email}
+              </div>
+              {e.action === "field_edited" && (e.before_value !== null || e.after_value !== null) ? (
+                <div className="mt-2 rounded-sm border border-border bg-surface overflow-hidden">
+                  <div className="px-3 py-1.5 border-b border-border text-[10px] font-mono text-muted-foreground">
+                    {e.field_label ?? e.field_key}
+                  </div>
+                  <div className="grid grid-cols-[auto_1fr] divide-y divide-border">
+                    <div className="px-3 py-2 text-[10px] font-mono text-muted-foreground border-r border-border bg-[var(--warning)]/5">
+                      − before
+                    </div>
+                    <div className="px-3 py-2 text-xs font-mono break-all bg-[var(--warning)]/5">
+                      {e.before_value || <span className="text-muted-foreground italic">empty</span>}
+                    </div>
+                    <div className="px-3 py-2 text-[10px] font-mono text-muted-foreground border-r border-border bg-primary/5">
+                      + after
+                    </div>
+                    <div className="px-3 py-2 text-xs font-mono break-all bg-primary/5">
+                      {e.after_value || <span className="text-muted-foreground italic">empty</span>}
+                    </div>
+                  </div>
+                </div>
+              ) : e.detail ? (
+                <p className="text-xs text-muted-foreground mt-1">{e.detail}</p>
+              ) : null}
               {e.note && (
                 <p className="text-xs mt-1 p-2 rounded-sm bg-surface border border-border">
-                  “{e.note}”
+                  "{e.note}"
                 </p>
               )}
             </li>
