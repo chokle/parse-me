@@ -1,20 +1,21 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { submitDoc, useIntakeDocs } from "@/lib/intake-store";
+import { useIntakeDocs, useIntakeMutations } from "@/lib/intake-store";
 
 const SOURCES = ["email · billing@", "S3 watcher · /invoices", "REST API · /v1/upload", "SFTP · nightly"];
 
 export function IntakeForm() {
   const docs = useIntakeDocs();
+  const { submitDoc } = useIntakeMutations();
   const [name, setName] = useState("");
   const [source, setSource] = useState(SOURCES[0]);
   const [lastId, setLastId] = useState<string | null>(null);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const clean = name.trim() || `Untitled-${Date.now().toString(36)}.pdf`;
-    const doc = submitDoc({ name: clean, source });
-    setLastId(doc.id);
+    const id = await submitDoc.mutateAsync({ name: clean, source });
+    setLastId(id);
     setName("");
   };
 
@@ -52,9 +53,10 @@ export function IntakeForm() {
         </label>
         <button
           type="submit"
-          className="w-full py-3 bg-primary text-primary-foreground font-medium text-sm rounded-sm hover:brightness-110 transition"
+          disabled={submitDoc.isPending}
+          className="w-full py-3 bg-primary text-primary-foreground font-medium text-sm rounded-sm hover:brightness-110 transition disabled:opacity-50"
         >
-          Send to extractor
+          {submitDoc.isPending ? "Sending…" : "Send to extractor"}
         </button>
         {lastId && (
           <p className="text-[11px] font-mono text-primary">
