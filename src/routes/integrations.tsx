@@ -62,11 +62,17 @@ function Integrations() {
               <h3 className="text-[10px] font-mono uppercase tracking-widest text-primary mb-4">
                 {g.name}
               </h3>
-              <ul className="space-y-2 text-sm">
+              <ul className="space-y-1 text-sm">
                 {g.items.map((i) => (
-                  <li key={i} className="flex items-center gap-2">
-                    <span className="size-1.5 rounded-full bg-primary" />
-                    {i}
+                  <li key={i}>
+                    <Link
+                      to="/contact"
+                      className="flex items-center gap-2 px-2 py-1.5 -mx-2 rounded hover:bg-muted transition group"
+                    >
+                      <span className="size-1.5 rounded-full bg-primary" />
+                      <span className="flex-1">{i}</span>
+                      <span className="text-muted-foreground opacity-0 group-hover:opacity-100 transition text-xs">Connect →</span>
+                    </Link>
                   </li>
                 ))}
               </ul>

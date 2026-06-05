@@ -33,9 +33,9 @@ export function SiteFooter() {
         <div>
           <h4 className="text-xs font-bold uppercase tracking-widest mb-6">Legal</h4>
           <div className="flex flex-col gap-3 text-sm text-muted-foreground">
-            <a href="#" className="hover:text-foreground">Privacy</a>
-            <a href="#" className="hover:text-foreground">Terms</a>
-            <a href="#" className="hover:text-foreground">Security</a>
+            <Link to="/privacy" className="hover:text-foreground">Privacy</Link>
+            <Link to="/terms" className="hover:text-foreground">Terms</Link>
+            <Link to="/security" className="hover:text-foreground">Security</Link>
           </div>
         </div>
       </div>
