@@ -52,7 +52,7 @@ const reviewerSchema = z.object({
   email: z.string().trim().email().max(160),
 });
 
-const SYSTEM_ACTOR = { name: "Intake bot", email: "intake@syntax.ai" };
+const SYSTEM_ACTOR = { name: "Intake bot", email: "intake@parse.me" };
 
 function fakeExtract(name: string): ExtractedField[] {
   const n = name.replace(/\.[^.]+$/, "");

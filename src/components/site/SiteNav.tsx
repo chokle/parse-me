@@ -15,7 +15,7 @@ export function SiteNav() {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
           <div className="size-6 bg-foreground rounded-sm" aria-hidden />
-          <span className="font-display text-xl tracking-tight font-extrabold">SYNTAX.AI</span>
+          <span className="font-display text-xl tracking-tight font-extrabold">PARSE.ME</span>
         </Link>
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
           {links.map((l) => (

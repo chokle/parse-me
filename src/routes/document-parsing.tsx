@@ -5,9 +5,9 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 export const Route = createFileRoute("/document-parsing")({
   head: () => ({
     meta: [
-      { title: "Document parsing — Syntax.AI" },
+      { title: "Document parsing — Parse.me" },
       { name: "description", content: "LLM-native parsing that handles tables, line items, and edge cases without templates or training." },
-      { property: "og:title", content: "Document parsing · Syntax.AI" },
+      { property: "og:title", content: "Document parsing · Parse.me" },
       { property: "og:description", content: "Describe the schema. We do the rest." },
     ],
   }),

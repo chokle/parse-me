@@ -7,7 +7,7 @@ export function SiteFooter() {
         <div className="col-span-2">
           <Link to="/" className="flex items-center gap-2 mb-6">
             <div className="size-5 bg-foreground rounded-sm" aria-hidden />
-            <span className="font-display text-lg tracking-tight font-extrabold">SYNTAX</span>
+            <span className="font-display text-lg tracking-tight font-extrabold">PARSE.ME</span>
           </Link>
           <p className="text-sm text-muted-foreground max-w-[28ch]">
             High-fidelity data extraction for the modern enterprise.
@@ -40,7 +40,7 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="max-w-7xl mx-auto mt-20 pt-8 border-t border-border flex flex-col md:flex-row gap-4 justify-between items-start md:items-center text-[10px] font-mono text-muted-foreground uppercase tracking-tighter">
-        <span>© {new Date().getFullYear()} Syntax AI Systems Inc.</span>
+        <span>© {new Date().getFullYear()} Parse.me Inc Inc.</span>
         <span>Built for high-stakes documents.</span>
       </div>
     </footer>

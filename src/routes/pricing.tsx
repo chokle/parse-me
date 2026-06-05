@@ -5,9 +5,9 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 export const Route = createFileRoute("/pricing")({
   head: () => ({
     meta: [
-      { title: "Pricing — Syntax.AI" },
+      { title: "Pricing — Parse.me" },
       { name: "description", content: "Usage-based pricing for document extraction. Start free, scale with confidence." },
-      { property: "og:title", content: "Pricing · Syntax.AI" },
+      { property: "og:title", content: "Pricing · Parse.me" },
       { property: "og:description", content: "Three plans, no surprises. Pay per document processed." },
     ],
   }),

@@ -5,9 +5,9 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 export const Route = createFileRoute("/security")({
   head: () => ({
     meta: [
-      { title: "Security — Syntax.AI" },
-      { name: "description", content: "How Syntax.AI protects customer documents: SOC 2 Type II, encryption, access controls, and audit logging." },
-      { property: "og:title", content: "Security · Syntax.AI" },
+      { title: "Security — Parse.me" },
+      { name: "description", content: "How Parse.me protects customer documents: SOC 2 Type II, encryption, access controls, and audit logging." },
+      { property: "og:title", content: "Security · Parse.me" },
       { property: "og:description", content: "Our defense-in-depth approach for high-stakes documents." },
     ],
   }),
@@ -55,8 +55,8 @@ function Security() {
           <Link to="/contact" className="px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-sm">
             Request documents
           </Link>
-          <a href="mailto:security@syntax.ai" className="px-6 py-3 border border-border font-semibold rounded-sm hover:bg-muted">
-            security@syntax.ai
+          <a href="mailto:security@parse.me" className="px-6 py-3 border border-border font-semibold rounded-sm hover:bg-muted">
+            security@parse.me
           </a>
         </div>
       </section>

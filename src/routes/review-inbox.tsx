@@ -8,13 +8,13 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 export const Route = createFileRoute("/review-inbox")({
   head: () => ({
     meta: [
-      { title: "Review Inbox — Human-in-the-loop validation · Syntax.AI" },
+      { title: "Review Inbox — Human-in-the-loop validation · Parse.me" },
       {
         name: "description",
         content:
           "Catch low-confidence extractions before they ship. Per-field thresholds, assignees, SLAs and audit logs — built into the extraction engine.",
       },
-      { property: "og:title", content: "Review Inbox · Syntax.AI" },
+      { property: "og:title", content: "Review Inbox · Parse.me" },
       {
         property: "og:description",
         content: "99% accuracy still means 1 in 100 wrong. The Review Inbox closes the loop.",
@@ -103,7 +103,7 @@ function ReviewInbox() {
           </div>
           <div className="p-8 border-2 border-foreground rounded-xl bg-card relative">
             <div className="absolute -top-3 left-6 px-2 py-0.5 bg-primary text-primary-foreground text-[10px] font-bold">
-              WITH SYNTAX
+              WITH PARSE.ME
             </div>
             <div className="text-[10px] font-mono uppercase tracking-widest text-primary mb-4">
               With

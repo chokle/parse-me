@@ -6,9 +6,9 @@ import { IntakeForm } from "@/components/site/IntakeForm";
 export const Route = createFileRoute("/document-intake")({
   head: () => ({
     meta: [
-      { title: "Document intake — Syntax.AI" },
+      { title: "Document intake — Parse.me" },
       { name: "description", content: "Email, API, cloud storage, SFTP. Capture every document the moment it arrives." },
-      { property: "og:title", content: "Document intake · Syntax.AI" },
+      { property: "og:title", content: "Document intake · Parse.me" },
       { property: "og:description", content: "Every channel, one normalized pipeline." },
     ],
   }),

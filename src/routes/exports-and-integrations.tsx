@@ -5,9 +5,9 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 export const Route = createFileRoute("/exports-and-integrations")({
   head: () => ({
     meta: [
-      { title: "Exports & integrations — Syntax.AI" },
+      { title: "Exports & integrations — Parse.me" },
       { name: "description", content: "Stream validated data to CRMs, databases, webhooks, and 50+ destinations in real time." },
-      { property: "og:title", content: "Exports · Syntax.AI" },
+      { property: "og:title", content: "Exports · Parse.me" },
       { property: "og:description", content: "From extraction to your stack in milliseconds." },
     ],
   }),

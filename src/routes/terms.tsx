@@ -5,9 +5,9 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 export const Route = createFileRoute("/terms")({
   head: () => ({
     meta: [
-      { title: "Terms of Service — Syntax.AI" },
-      { name: "description", content: "Terms governing use of Syntax.AI's document extraction platform and Review Inbox." },
-      { property: "og:title", content: "Terms of Service · Syntax.AI" },
+      { title: "Terms of Service — Parse.me" },
+      { name: "description", content: "Terms governing use of Parse.me's document extraction platform and Review Inbox." },
+      { property: "og:title", content: "Terms of Service · Parse.me" },
       { property: "og:description", content: "Plain-language terms for using the platform." },
     ],
   }),
@@ -26,7 +26,7 @@ function Terms() {
         <section className="space-y-8 text-sm leading-relaxed text-muted-foreground">
           <div>
             <h2 className="text-foreground font-semibold text-lg mb-2">1. Acceptance</h2>
-            <p>By using Syntax.AI you agree to these terms on behalf of yourself and any organization you represent.</p>
+            <p>By using Parse.me you agree to these terms on behalf of yourself and any organization you represent.</p>
           </div>
           <div>
             <h2 className="text-foreground font-semibold text-lg mb-2">2. Acceptable use</h2>
@@ -42,7 +42,7 @@ function Terms() {
           </div>
           <div>
             <h2 className="text-foreground font-semibold text-lg mb-2">5. Service availability</h2>
-            <p>We target 99.9% monthly uptime on Professional and 99.95% on Enterprise. Status: <a href="https://status.syntax.ai" className="text-foreground underline underline-offset-4">status.syntax.ai</a>.</p>
+            <p>We target 99.9% monthly uptime on Professional and 99.95% on Enterprise. Status: <a href="https://status.parse.me" className="text-foreground underline underline-offset-4">status.parse.me</a>.</p>
           </div>
           <div>
             <h2 className="text-foreground font-semibold text-lg mb-2">6. Termination</h2>
@@ -54,7 +54,7 @@ function Terms() {
           </div>
           <div>
             <h2 className="text-foreground font-semibold text-lg mb-2">8. Contact</h2>
-            <p>Legal questions: <a href="mailto:legal@syntax.ai" className="text-foreground underline underline-offset-4">legal@syntax.ai</a>.</p>
+            <p>Legal questions: <a href="mailto:legal@parse.me" className="text-foreground underline underline-offset-4">legal@parse.me</a>.</p>
           </div>
         </section>
       </article>
