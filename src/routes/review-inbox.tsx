@@ -124,7 +124,7 @@ function ReviewInbox() {
           Close the loop on extraction.
         </h2>
         <Link to="/contact" className="inline-block px-8 py-4 bg-primary text-primary-foreground font-semibold rounded-sm">
-          Book a demo
+          Open my workspace
         </Link>
       </section>
 

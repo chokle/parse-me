@@ -78,7 +78,7 @@ function Home() {
                 to="/contact"
                 className="px-6 md:px-8 py-3 md:py-4 bg-primary text-primary-foreground font-semibold rounded-sm hover:brightness-110 transition shadow-lg shadow-primary/20"
               >
-                Deploy instance
+                Start extracting — free
               </Link>
               <Link
                 to="/review-inbox"
@@ -317,7 +317,7 @@ function Home() {
         </p>
         <div className="flex flex-wrap justify-center gap-3">
           <Link to="/contact" className="px-8 py-4 bg-primary text-primary-foreground font-semibold rounded-sm shadow-lg shadow-primary/20">
-            Book a demo
+            Open my workspace
           </Link>
           <Link to="/pricing" className="px-8 py-4 border border-border font-semibold rounded-sm hover:bg-muted">
             See pricing
