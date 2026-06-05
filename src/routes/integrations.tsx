@@ -5,9 +5,9 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 export const Route = createFileRoute("/integrations")({
   head: () => ({
     meta: [
-      { title: "Integrations — Syntax.AI" },
+      { title: "Integrations — Parse.me" },
       { name: "description", content: "Send extracted data to 50+ destinations: Salesforce, Sheets, Slack, webhooks, S3, and more." },
-      { property: "og:title", content: "Integrations · Syntax.AI" },
+      { property: "og:title", content: "Integrations · Parse.me" },
       { property: "og:description", content: "Native connectors and webhooks for every modern stack." },
     ],
   }),
@@ -66,7 +66,7 @@ function Integrations() {
                 {g.items.map((i) => (
                   <li key={i}>
                     <Link
-                      to="/contact"
+                      to="/document-intake"
                       className="flex items-center gap-2 px-2 py-1.5 -mx-2 rounded hover:bg-muted transition group"
                     >
                       <span className="size-1.5 rounded-full bg-primary" />

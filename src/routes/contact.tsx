@@ -7,9 +7,9 @@ import { saveReviewer, useReviewer } from "@/lib/reviewer-identity";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Start using Syntax.AI — free workspace" },
+      { title: "Start using Parse.me — free workspace" },
       { name: "description", content: "Drop in your name and email to open a live extraction workspace. No sales call required." },
-      { property: "og:title", content: "Start using Syntax.AI" },
+      { property: "og:title", content: "Start using Parse.me" },
       { property: "og:description", content: "Open a live extraction workspace in seconds." },
     ],
   }),

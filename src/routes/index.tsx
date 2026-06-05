@@ -6,13 +6,13 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Syntax.AI — Documents in. Validated data out." },
+      { title: "Parse.me — Documents in. Validated data out." },
       {
         name: "description",
         content:
           "LLM-native data extraction with a built-in Review Inbox. Catch every low-confidence field before it ships to your systems.",
       },
-      { property: "og:title", content: "Syntax.AI — Documents in. Validated data out." },
+      { property: "og:title", content: "Parse.me — Documents in. Validated data out." },
       {
         property: "og:description",
         content: "Extract structured data from invoices, contracts and IDs with human-in-the-loop accuracy.",
@@ -39,7 +39,7 @@ const capabilities = [
 const faq = [
   {
     q: "How is this different from generic OCR?",
-    a: "OCR returns characters. Syntax returns structured JSON keyed to your schema, with per-field confidence and a built-in human review path.",
+    a: "OCR returns characters. Parse.me returns structured JSON keyed to your schema, with per-field confidence and a built-in human review path.",
   },
   {
     q: "What happens to low-confidence fields?",
@@ -210,7 +210,7 @@ function Home() {
               Engineered for the messy real world.
             </h2>
             <p className="text-muted-foreground">
-              No two documents are identical. Syntax handles edge cases that break rules-based parsers.
+              No two documents are identical. Parse.me handles edge cases that break rules-based parsers.
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">

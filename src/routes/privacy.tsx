@@ -5,9 +5,9 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
-      { title: "Privacy Policy — Syntax.AI" },
-      { name: "description", content: "How Syntax.AI collects, uses, stores, and protects your data." },
-      { property: "og:title", content: "Privacy Policy · Syntax.AI" },
+      { title: "Privacy Policy — Parse.me" },
+      { name: "description", content: "How Parse.me collects, uses, stores, and protects your data." },
+      { property: "og:title", content: "Privacy Policy · Parse.me" },
       { property: "og:description", content: "Our commitments around data handling, retention, and the strict no-train default." },
     ],
   }),
@@ -38,7 +38,7 @@ function Privacy() {
           </div>
           <div>
             <h2 className="text-foreground font-semibold text-lg mb-2">4. Retention</h2>
-            <p>Documents are retained for the lifetime of your workspace and deleted within 30 days of account closure or on request via privacy@syntax.ai.</p>
+            <p>Documents are retained for the lifetime of your workspace and deleted within 30 days of account closure or on request via privacy@parse.me.</p>
           </div>
           <div>
             <h2 className="text-foreground font-semibold text-lg mb-2">5. Sub-processors</h2>
@@ -46,11 +46,11 @@ function Privacy() {
           </div>
           <div>
             <h2 className="text-foreground font-semibold text-lg mb-2">6. Your rights</h2>
-            <p>GDPR and CCPA rights — access, deletion, portability, opt-out — are honored. Email privacy@syntax.ai and we'll respond within 30 days.</p>
+            <p>GDPR and CCPA rights — access, deletion, portability, opt-out — are honored. Email privacy@parse.me and we'll respond within 30 days.</p>
           </div>
           <div>
             <h2 className="text-foreground font-semibold text-lg mb-2">7. Contact</h2>
-            <p>Questions: <a href="mailto:privacy@syntax.ai" className="text-foreground underline underline-offset-4">privacy@syntax.ai</a>.</p>
+            <p>Questions: <a href="mailto:privacy@parse.me" className="text-foreground underline underline-offset-4">privacy@parse.me</a>.</p>
           </div>
         </section>
       </article>
